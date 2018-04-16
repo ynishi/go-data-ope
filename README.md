@@ -11,5 +11,6 @@ simple data operation with go.
 * plan -- plan execution, no effect.
 * do -- main processing of this task.
 * cancel -- cancel main processing.
+* back -- fail back main processing.
 * check -- check output or effect.
 * monitor -- get task execution status.
