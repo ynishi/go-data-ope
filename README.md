@@ -7,7 +7,7 @@ simple data operation with go.
 * kick a task via rest api, task execute concurrent.
 
 ## interface methods of a task
-* validete -- check input or precondition.
+* validate -- check input or precondition.
 * plan -- plan execution, no effect.
 * do -- main processing of this task.
 * cancel -- cancel main processing.
