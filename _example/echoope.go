@@ -3,15 +3,16 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	gdo "github.com/ynishi/go-data-ope"
 	"fmt"
 	"log"
 	"os"
+
+	gdo "github.com/ynishi/go-data-ope"
 )
 
-type EchoTask struct{
+type EchoTask struct {
 	Original string
-	Output string
+	Output   string
 }
 
 type EchoReq struct {
@@ -42,7 +43,7 @@ func (et *EchoTask) Plan(req interface{}, v interface{}) error {
 	return nil
 }
 
-func (et *EchoTask) Do(req interface{},  v interface{}) error {
+func (et *EchoTask) Do(req interface{}, v interface{}) error {
 	echoReq, err := v2EchoReq(req)
 	if err != nil {
 		return err
@@ -52,7 +53,7 @@ func (et *EchoTask) Do(req interface{},  v interface{}) error {
 	v = echoReq.Str
 	return nil
 }
-func (et *EchoTask) Back(req interface{},  v interface{}) error {
+func (et *EchoTask) Back(req interface{}, v interface{}) error {
 	echoReq, err := v2EchoReq(req)
 	if err != nil {
 		return err
@@ -75,11 +76,11 @@ func (et *EchoTask) Check(req interface{}) error {
 	}
 	return nil
 }
-func (et *EchoTask) Monitor(req interface{},  v interface{}) error {
+func (et *EchoTask) Monitor(req interface{}, v interface{}) error {
 	return nil
 }
 
-func v2EchoReq (v interface{}) (*EchoReq, error) {
+func v2EchoReq(v interface{}) (*EchoReq, error) {
 	var e EchoReq
 	var ok bool
 	if e, ok = v.(EchoReq); !ok {
@@ -88,7 +89,7 @@ func v2EchoReq (v interface{}) (*EchoReq, error) {
 	return &e, nil
 }
 
-func v2EchoRes (v interface{}) (*EchoRes, error) {
+func v2EchoRes(v interface{}) (*EchoRes, error) {
 	var e *EchoRes
 	var ok bool
 	if e, ok = v.(*EchoRes); !ok {
@@ -130,13 +131,13 @@ func main() {
 	}
 	fmt.Printf("{\"do_result\": %v}\n", string(buf))
 
-    if err = task.Check(echoReq); err != nil {
-    	log.Printf("failed to do, try to back: %v\n", err)
-    	if err = task.Back(echoReq, echoRes); err != nil {
+	if err = task.Check(echoReq); err != nil {
+		log.Printf("failed to do, try to back: %v\n", err)
+		if err = task.Back(echoReq, echoRes); err != nil {
 			log.Fatalf("failed to back: %v\n", err)
 		}
 		log.Printf("succeed to back: %v\n", err)
-    	return
+		return
 	}
 	fmt.Println(`{"check_result": "succeed"}`)
 
