@@ -14,7 +14,7 @@ const (
 
 func TestMainExec(t *testing.T) {
 
-	out, err := exec.Command("go", "run", "echoope.go", "abcd").Output()
+	out, err := exec.Command("go", "run", "main.go", "abcd").Output()
 	if err != nil {
 		t.Error(err)
 	}

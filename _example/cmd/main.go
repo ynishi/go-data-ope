@@ -98,8 +98,6 @@ func v2EchoRes(v interface{}) (*EchoRes, error) {
 	return e, nil
 }
 
-
-
 func main() {
 
 	if len(os.Args) != 2 {
