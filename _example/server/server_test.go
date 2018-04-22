@@ -9,12 +9,15 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	ect "github.com/ynishi/go-data-ope/_example/echotask"
 )
 
 var s *httptest.Server
 
 const (
-	reqStr = `{"str":"abcd"}`
+	origStr = `{"str":""}`
+	testStr = `{"str":"abcd"}`
+
 	wantValidate = `{"message":"validate succeed","echo_res":null}`
 	wantPlan = `{"message":"plan succeed","echo_res":null}`
 	wantDo = `{"message":"do succeed","echo_res":{"str":"abcd"}}`
@@ -26,6 +29,7 @@ func TestMain(m *testing.M) {
 
 	//setup
 	mux := http.NewServeMux()
+	task = &ect.EchoTask{}
 
 	mux.HandleFunc("/echo/validate", EchoValidateFunc)
 	mux.HandleFunc("/echo/plan", EchoPlanFunc)
@@ -43,11 +47,11 @@ func TestMain(m *testing.M) {
 	os.Exit(retCode)
 }
 
-func HelperReq(path string) (resp *http.Response, err error) {
+func HelperReq(path, str string) (resp *http.Response, err error) {
 	if resp, err = http.Post(
 		fmt.Sprintf("%s/echo/%s", s.URL, path),
 		"application/x-www-form-urlencoded",
-		bytes.NewReader([]byte(reqStr))); err != nil {
+		bytes.NewReader([]byte(str))); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -58,7 +62,7 @@ func TestValidate(t *testing.T) {
 	var resp *http.Response
 	var err error
 
-	if resp, err = HelperReq("validate"); err != nil {
+	if resp, err = HelperReq("validate", testStr); err != nil {
 		t.Fatal(err)
 	}
 
@@ -80,7 +84,7 @@ func TestPlan(t *testing.T) {
 	var resp *http.Response
 	var err error
 
-	if resp, err = HelperReq("plan"); err != nil {
+	if resp, err = HelperReq("plan", testStr); err != nil {
 		t.Fatal(err)
 	}
 
@@ -101,7 +105,7 @@ func TestDo(t *testing.T) {
 	var resp *http.Response
 	var err error
 
-	if resp, err = HelperReq("do"); err != nil {
+	if resp, err = HelperReq("do", testStr); err != nil {
 		t.Fatal(err)
 	}
 
@@ -114,7 +118,7 @@ func TestDo(t *testing.T) {
 		t.Fatalf("status: %v, body: %s", resp.Status, buf)
 	}
 	if !reflect.DeepEqual([]byte(wantDo), buf) {
-		t.Fatalf("not matched,\n want: %v,\n have: %v\n",wantDo, buf)
+		t.Fatalf("not matched,\n want: %v,\n have: %s\n",wantDo, buf)
 	}
 }
 
@@ -122,11 +126,11 @@ func TestCheck(t *testing.T) {
 	var resp *http.Response
 	var err error
 
-	if resp, err = HelperReq("do"); err != nil {
+	if resp, err = HelperReq("do", testStr); err != nil {
 		t.Fatal(err)
 	}
 
-	if resp, err = HelperReq("check"); err != nil {
+	if resp, err = HelperReq("check", testStr); err != nil {
 		t.Fatal(err)
 	}
 
@@ -139,19 +143,24 @@ func TestCheck(t *testing.T) {
 		t.Fatalf("status: %v, body: %s", resp.Status, buf)
 	}
 	if !reflect.DeepEqual([]byte(wantCheck), buf) {
-		t.Fatalf("not matched,\n want: %v,\n have: %v\n",wantCheck, buf)
+		t.Fatalf("not matched,\n want: %v,\n have: %s\n",wantCheck, buf)
 	}
 }
 
 func TestBack(t *testing.T) {
+
 	var resp *http.Response
 	var err error
 
-	if resp, err = HelperReq("do"); err != nil {
+	if resp, err = HelperReq("do", origStr); err != nil {
 		t.Fatal(err)
 	}
 
-	if resp, err = HelperReq("back"); err != nil {
+	if resp, err = HelperReq("do", testStr); err != nil {
+		t.Fatal(err)
+	}
+
+	if resp, err = HelperReq("back", origStr); err != nil {
 		t.Fatal(err)
 	}
 
@@ -164,6 +173,6 @@ func TestBack(t *testing.T) {
 		t.Fatalf("status: %v, body: %s", resp.Status, buf)
 	}
 	if !reflect.DeepEqual([]byte(wantBack), buf) {
-		t.Fatalf("not matched,\n want: %v,\n have: %v\n",wantBack, buf)
+		t.Fatalf("not matched,\n want: %v,\n have: %s\n",wantBack, buf)
 	}
 }
