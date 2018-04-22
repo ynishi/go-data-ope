@@ -14,7 +14,6 @@ import (
 
 var s *httptest.Server
 
-
 const (
 	origStr = `{"str":""}`
 	testStr = `{"str":"abcd"}`
