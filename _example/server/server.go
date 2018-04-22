@@ -77,7 +77,9 @@ func echoTaskHandler(ctx context.Context, echoReq ect.EchoReq, echoRes *ect.Echo
 	return nil
 }
 
-func main () {
+var task = &ect.EchoTask{}
+
+func main() {
 
 	http.HandleFunc("/echo/validate", EchoValidateFunc)
 	http.HandleFunc("/echo/plan", EchoPlanFunc)
@@ -88,15 +90,12 @@ func main () {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-type EchoResponse struct{
-	Message string `json:"message"`
-	Echo *ect.EchoRes `json:"echo_res"`
+type EchoResponse struct {
+	Message string       `json:"message"`
+	Echo    *ect.EchoRes `json:"echo_res"`
 }
 
 func EchoValidateFunc(w http.ResponseWriter, r *http.Request) {
-
-	var task gdo.Tasker
-	task = &ect.EchoTask{}
 
 	buf, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -121,7 +120,7 @@ func EchoValidateFunc(w http.ResponseWriter, r *http.Request) {
 
 	echoResponse := EchoResponse{
 		Message: "validate succeed",
-		Echo: nil,
+		Echo:    nil,
 	}
 
 	buf, err = json.Marshal(echoResponse)
@@ -137,9 +136,6 @@ func EchoValidateFunc(w http.ResponseWriter, r *http.Request) {
 }
 
 func EchoPlanFunc(w http.ResponseWriter, r *http.Request) {
-
-	var task gdo.Tasker
-	task = &ect.EchoTask{}
 
 	buf, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -165,7 +161,7 @@ func EchoPlanFunc(w http.ResponseWriter, r *http.Request) {
 
 	echoResponse := EchoResponse{
 		Message: "plan succeed",
-		Echo: nil,
+		Echo:    nil,
 	}
 
 	buf, err = json.Marshal(echoResponse)
@@ -180,11 +176,7 @@ func EchoPlanFunc(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-
 func EchoDoFunc(w http.ResponseWriter, r *http.Request) {
-
-	var task gdo.Tasker
-	task = &ect.EchoTask{}
 
 	buf, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -201,16 +193,17 @@ func EchoDoFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	echoRes := ect.EchoRes{}
-	if err := task.Do(echoReq, &echoRes); err != nil {
+	echoRes := &ect.EchoRes{}
+	if err := task.Do(echoReq, echoRes); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("do error"))
 		return
 	}
 
+	echoRes.Str = echoReq.Str
 	echoResponse := EchoResponse{
 		Message: "do succeed",
-		Echo: nil,
+		Echo:    echoRes,
 	}
 
 	buf, err = json.Marshal(echoResponse)
@@ -226,9 +219,6 @@ func EchoDoFunc(w http.ResponseWriter, r *http.Request) {
 }
 
 func EchoBackFunc(w http.ResponseWriter, r *http.Request) {
-
-	var task gdo.Tasker
-	task = &ect.EchoTask{}
 
 	buf, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -252,9 +242,10 @@ func EchoBackFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	echoRes.Str = echoReq.Str
 	echoResponse := EchoResponse{
 		Message: "back succeed",
-		Echo: nil,
+		Echo:    &echoRes,
 	}
 
 	buf, err = json.Marshal(echoResponse)
@@ -270,9 +261,6 @@ func EchoBackFunc(w http.ResponseWriter, r *http.Request) {
 }
 
 func EchoCheckFunc(w http.ResponseWriter, r *http.Request) {
-
-	var task gdo.Tasker
-	task = &ect.EchoTask{}
 
 	buf, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -297,7 +285,7 @@ func EchoCheckFunc(w http.ResponseWriter, r *http.Request) {
 
 	echoResponse := EchoResponse{
 		Message: "check succeed",
-		Echo: nil,
+		Echo:    nil,
 	}
 
 	buf, err = json.Marshal(echoResponse)
