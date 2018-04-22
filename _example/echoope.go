@@ -16,11 +16,11 @@ type EchoTask struct {
 }
 
 type EchoReq struct {
-	Str string
+	Str string `json:"str"`
 }
 
 type EchoRes struct {
-	Str string
+	Str string `json:"str"`
 }
 
 func (et *EchoTask) Validate(req interface{}) error {
