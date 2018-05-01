@@ -1,6 +1,9 @@
 package dataope
 
-import "testing"
+import (
+	"context"
+	"testing"
+)
 
 type testTask struct{}
 
@@ -22,22 +25,22 @@ func (tt *testTask) Plan(req interface{}, v interface{}) error {
 	return nil
 }
 
-func (tt *testTask) Do(req interface{},  v interface{}) error {
+func (tt *testTask) Do(req interface{}, v interface{}) error {
 	return nil
 }
-func (tt *testTask) Back(req interface{},  v interface{}) error {
+func (tt *testTask) Back(req interface{}, v interface{}) error {
 	return nil
 }
 func (tt *testTask) Check(req interface{}) error {
 	return nil
 }
-func (tt *testTask) Monitor(req interface{},  v interface{}) error {
+func (tt *testTask) Monitor(req interface{}, v interface{}) error {
 	return nil
 }
 
 func TestTasker(t *testing.T) {
 	task := &testTask{}
-	if  _, ok := interface{}(task).(Tasker); !ok {
+	if _, ok := interface{}(task).(Tasker); !ok {
 		t.Errorf("failed to implement Tasker")
 	}
 	request := testRequset{}
@@ -64,4 +67,42 @@ func TestTasker(t *testing.T) {
 		t.Errorf("failed to call monitor: %v", err)
 	}
 
+}
+
+type testCtxTask struct{}
+
+func (tct *testCtxTask) Prepare(ctx context.Context, req interface{}, res interface{}) error {
+	return nil
+}
+
+func (tct *testCtxTask) Run(ctx context.Context, req interface{}, res interface{}) error {
+	return nil
+}
+
+func (tct *testCtxTask) Rollback(ctx context.Context, req interface{}, res interface{}) error {
+	return nil
+}
+func (tct *testCtxTask) Commit(ctx context.Context, req interface{}, res interface{}) error {
+	return nil
+}
+func (tct *testCtxTask) Stat(ctx context.Context, req interface{}, res interface{}) error {
+	return nil
+}
+
+func TestCtxTasker(t *testing.T) {
+	task := &testCtxTask{}
+	if _, ok := interface{}(task).(CtxTasker); !ok {
+		t.Errorf("not implemented TestCtxTask")
+	}
+}
+
+func TestCtxDefaultServer(t *testing.T) {
+	task := &testCtxTask{}
+	server, err := NewDefaultServer(task)
+	if err != nil {
+		t.Error(err)
+	}
+	if err := server.Run(nil, "req", "res"); err != nil {
+		t.Error(err)
+	}
 }
