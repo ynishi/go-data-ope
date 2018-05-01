@@ -74,10 +74,11 @@ func NewDefaultServer(ctxTask CtxTasker) (dc *DefaultServer, err error) {
 
 func (dc *DefaultServer) Run(ctx context.Context, req interface{}, res interface{}) (err error) {
 	if ctx == nil {
-		ctx := context.Background()
-		ctx, cancel := context.WithCancel(ctx)
-		defer cancel()
+		ctx = context.Background()
 	}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	errChan := make(chan error, 1)
 
 	go func() {

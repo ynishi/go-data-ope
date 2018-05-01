@@ -102,5 +102,7 @@ func TestCtxDefaultServer(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	server.Run(nil, "req", "res")
+	if err := server.Run(nil, "req", "res"); err != nil {
+		t.Error(err)
+	}
 }
